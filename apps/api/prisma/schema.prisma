@@ -1,0 +1,136 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id               String            @id @default(uuid())
+  email            String            @unique
+  password         String
+  name             String?
+  currency         String            @default("USD")
+  language         String            @default("en")
+  theme            String            @default("light")
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  wallet           Wallet?
+  transactions     Transaction[]
+  categories       Category[]
+  advancedPayments AdvancedPayment[]
+  notifications    Notification[]
+  auditLogs        AuditLog[]
+  syncStatus       SyncStatus?
+  backups          Backup[]
+}
+
+model Wallet {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id])
+  balance       Float    @default(0)
+  totalIncome   Float    @default(0)
+  totalExpenses Float    @default(0)
+  lastUpdated   DateTime @default(now())
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  type        String // income | expense
+  amount      Float
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+  description String?
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Category {
+  id           String        @id @default(uuid())
+  userId       String
+  user         User          @relation(fields: [userId], references: [id])
+  name         String
+  icon         String?
+  type         String // income | expense
+  isCustom     Boolean       @default(false)
+  transactions Transaction[]
+  createdAt    DateTime      @default(now())
+}
+
+model AdvancedPayment {
+  id          String       @id @default(uuid())
+  userId      String
+  user         User         @relation(fields: [userId], references: [id])
+  type        String // lend | borrow
+  amount      Float
+  remaining   Float
+  contactName String
+  dueDate     DateTime?
+  status      String // unpaid | partial | paid
+  logs        PaymentLog[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model PaymentLog {
+  id                String          @id @default(uuid())
+  advancedPaymentId String
+  advancedPayment   AdvancedPayment @relation(fields: [advancedPaymentId], references: [id])
+  amount            Float
+  date              DateTime        @default(now())
+  note              String?
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  type      String? // reminder | system
+  createdAt DateTime @default(now())
+}
+
+model Backup {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  fileName  String
+  fileSize  Int
+  createdAt DateTime @default(now())
+}
+
+model SyncStatus {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id])
+  lastSynced  DateTime @default(now())
+  deviceCount Int      @default(0)
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  resource  String
+  payload   String? // JSON string
+  createdAt DateTime @default(now())
+}
+
+model AnalyticsCache {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String // monthly | yearly | overview
+  data      String // JSON string
+  updatedAt DateTime @default(now())
+
+  @@unique([userId, type])
+}
