@@ -1,6 +1,9 @@
 {
-  "name": "moneyflow-api",
+  "name": "hsabati-monorepo",
   "version": "1.0.0",
+  "workspaces": [
+    "apps/*"
+  ],
   "description": "MoneyFlow SaaS – Personal Finance Tracker API",
   "main": "server.js",
   "scripts": {

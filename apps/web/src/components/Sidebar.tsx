@@ -11,7 +11,8 @@ import {
     LogOut,
     Wallet,
     Menu,
-    X
+    X,
+    Repeat
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
@@ -25,6 +26,7 @@ export const Sidebar = () => {
     const menuItems = [
         { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
         { icon: ArrowLeftRight, label: 'Transactions', path: '/transactions' },
+        { icon: Repeat, label: 'Recurring', path: '/recurring-transactions' },
         { icon: ShieldCheck, label: 'Lend/Borrow', path: '/advanced-payments' },
         { icon: BarChart3, label: 'Analytics', path: '/analytics' },
         { icon: Bell, label: 'Notifications', path: '/notifications' },

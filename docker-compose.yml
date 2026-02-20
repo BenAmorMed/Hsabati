@@ -1,23 +1,79 @@
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: gravitywallet-db
+    container_name: hsabati-db
     restart: always
     environment:
-      POSTGRES_USER: gravityuser
-      POSTGRES_PASSWORD: gravitypassword
-      POSTGRES_DB: gravitywallet
+      POSTGRES_USER: hsabatiuser
+      POSTGRES_PASSWORD: hsabatipassword
+      POSTGRES_DB: hsabati
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - hsabati-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U hsabatiuser -d hsabati" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   redis:
     image: redis:7-alpine
-    container_name: gravitywallet-sync
+    container_name: hsabati-redis
     restart: always
     ports:
       - "6379:6379"
+    networks:
+      - hsabati-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: hsabati-api
+    restart: on-failure
+    ports:
+      - "5555:5555"
+    environment:
+      DATABASE_URL: postgresql://hsabatiuser:hsabatipassword@postgres:5432/hsabati?schema=public
+      JWT_SECRET: ${JWT_SECRET:-super-secret-key}
+      PORT: 5555
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - hsabati-network
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:5555
+    container_name: hsabati-web
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:5555
+    depends_on:
+      - api
+    networks:
+      - hsabati-network
+
+networks:
+  hsabati-network:
+    driver: bridge
 
 volumes:
   postgres_data:
