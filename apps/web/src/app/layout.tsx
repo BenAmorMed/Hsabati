@@ -14,8 +14,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GravityWallet | Premium Finance Tracker",
+  title: "Hsabati | Premium Finance Tracker",
   description: "Advanced financial management for modern users.",
+  manifest: "/manifest.json",
+  themeColor: "#8b5cf6",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Hsabati",
+  },
 };
 
 export default function RootLayout({

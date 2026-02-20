@@ -1,9 +1,9 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
+import { Manager } from 'socket.io-client';
 
 interface SocketContextType {
-    socket: Socket | null;
+    socket: any;
     isConnected: boolean;
 }
 
@@ -12,15 +12,17 @@ const SocketContext = createContext<SocketContextType>({ socket: null, isConnect
 export const useSocket = () => useContext(SocketContext);
 
 export const SocketProvider = ({ children, token }: { children: React.ReactNode; token?: string }) => {
-    const [socket, setSocket] = useState<Socket | null>(null);
+    const [socket, setSocket] = useState<any>(null);
     const [isConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
         if (!token) return;
 
-        const socketInstance = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000', {
-            auth: { token },
+        const manager = new Manager(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5555', {
+            autoConnect: true
         });
+        const socketInstance = manager.socket("/");
+        (socketInstance as any).auth = { token };
 
         socketInstance.on('connect', () => setIsConnected(true));
         socketInstance.on('disconnect', () => setIsConnected(false));

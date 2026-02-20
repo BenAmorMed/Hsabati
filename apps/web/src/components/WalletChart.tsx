@@ -10,19 +10,27 @@ import {
     ResponsiveContainer,
 } from 'recharts';
 
-const data = [
-    { name: 'Mon', income: 4000, expenses: 2400 },
-    { name: 'Tue', income: 3000, expenses: 1398 },
-    { name: 'Wed', income: 2000, expenses: 9800 },
-    { name: 'Thu', income: 2780, expenses: 3908 },
-    { name: 'Fri', income: 1890, expenses: 4800 },
-    { name: 'Sat', income: 2390, expenses: 3800 },
-    { name: 'Sun', income: 3490, expenses: 4300 },
-];
+interface TrendData {
+    name: string;
+    income: number;
+    expenses: number;
+    date: string;
+}
 
-export const WalletChart = () => {
+interface WalletChartProps {
+    data: TrendData[];
+}
+
+export const WalletChart = ({ data }: WalletChartProps) => {
+    if (!data || data.length === 0) {
+        return (
+            <div className="w-full h-80 flex items-center justify-center text-muted-foreground border border-white/5 rounded-2xl bg-white/5">
+                No trend data available.
+            </div>
+        );
+    }
     return (
-        <div className="w-full h-80">
+        <div className="w-full h-80 min-w-0">
             <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
                     data={data}

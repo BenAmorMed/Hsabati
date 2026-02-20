@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { Wallet } from 'lucide-react';
 
 export default function RegisterPage() {
     const [name, setName] = useState('');
@@ -28,19 +29,25 @@ export default function RegisterPage() {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="glass-card w-full max-w-md p-8"
+                className="glass-card w-full max-w-md p-6 md:p-8"
             >
-                <h1 className="text-3xl font-bold mb-2 text-center">Join <span className="gradient-text">Hsabati</span></h1>
-                <p className="text-muted-foreground text-center mb-8">Start tracking your wealth today.</p>
+                <div className="flex justify-center mb-6">
+                    <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
+                        <Wallet className="text-white" size={28} />
+                    </div>
+                </div>
+
+                <h1 className="text-2xl md:text-3xl font-bold mb-2 text-center">Join <span className="gradient-text">Hsabati</span></h1>
+                <p className="text-muted-foreground text-center mb-8 text-sm md:text-base">Start tracking your wealth today.</p>
 
                 {error && <p className="text-red-400 text-sm text-center mb-4">{error}</p>}
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
                     <div>
-                        <label className="block text-sm font-medium mb-2">Full Name</label>
+                        <label className="block text-sm font-medium mb-1.5 md:mb-2">Full Name</label>
                         <input
                             type="text"
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition-colors"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 md:py-3 focus:outline-none focus:border-primary transition-colors text-sm md:text-base"
                             placeholder="Alex Johnson"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
@@ -48,10 +55,10 @@ export default function RegisterPage() {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium mb-2">Email Address</label>
+                        <label className="block text-sm font-medium mb-1.5 md:mb-2">Email Address</label>
                         <input
                             type="email"
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition-colors"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 md:py-3 focus:outline-none focus:border-primary transition-colors text-sm md:text-base"
                             placeholder="alex@example.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -59,10 +66,10 @@ export default function RegisterPage() {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium mb-2">Password</label>
+                        <label className="block text-sm font-medium mb-1.5 md:mb-2">Password</label>
                         <input
                             type="password"
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition-colors"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 md:py-3 focus:outline-none focus:border-primary transition-colors text-sm md:text-base"
                             placeholder="••••••••"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -72,7 +79,7 @@ export default function RegisterPage() {
                     <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        className="w-full bg-primary py-3 rounded-xl font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all"
+                        className="w-full bg-primary py-3 md:py-3.5 rounded-xl font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all text-sm md:text-base"
                     >
                         Create Account
                     </motion.button>

@@ -1,6 +1,6 @@
 "use client";
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     LayoutDashboard,
     ArrowLeftRight,
@@ -9,7 +9,9 @@ import {
     Settings,
     Bell,
     LogOut,
-    Wallet
+    Wallet,
+    Menu,
+    X
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
@@ -18,6 +20,7 @@ export const Sidebar = () => {
     const { logout } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
+    const [isOpen, setIsOpen] = useState(false);
 
     const menuItems = [
         { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
@@ -33,13 +36,22 @@ export const Sidebar = () => {
         router.push('/login');
     };
 
-    return (
-        <div className="w-64 h-screen glass-morphism border-r border-white/5 p-6 flex flex-col fixed left-0 top-0">
-            <div className="flex items-center gap-3 mb-12 px-2">
-                <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30">
-                    <Wallet className="text-white" size={24} />
+    const toggleSidebar = () => setIsOpen(!isOpen);
+
+    const SidebarContent = ({ isMobile = false }) => (
+        <div className={`h-full flex flex-col ${isMobile ? 'p-6' : 'p-6'}`}>
+            <div className="flex items-center justify-between mb-12 px-2">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30">
+                        <Wallet className="text-white" size={24} />
+                    </div>
+                    <h1 className="text-xl font-bold tracking-tight">Hsabati<span className="text-primary text-2xl leading-none">.</span></h1>
                 </div>
-                <h1 className="text-xl font-bold tracking-tight">Hsabati<span className="text-primary text-2xl leading-none">.</span></h1>
+                {isMobile && (
+                    <button onClick={toggleSidebar} className="p-2 text-muted-foreground hover:text-foreground">
+                        <X size={24} />
+                    </button>
+                )}
             </div>
 
             <nav className="flex-1 space-y-2">
@@ -49,7 +61,10 @@ export const Sidebar = () => {
                         <motion.div
                             key={item.path}
                             whileHover={{ x: 5 }}
-                            onClick={() => router.push(item.path)}
+                            onClick={() => {
+                                router.push(item.path);
+                                if (isMobile) setIsOpen(false);
+                            }}
                             className={`flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-colors ${isActive ? 'bg-primary/20 text-primary border border-primary/20' : 'text-muted-foreground hover:bg-white/5'
                                 }`}
                         >
@@ -71,5 +86,49 @@ export const Sidebar = () => {
                 </motion.div>
             </div>
         </div>
+    );
+
+    return (
+        <>
+            {/* Mobile Header Toggle */}
+            <div className="lg:hidden fixed top-0 left-0 right-0 h-16 glass-morphism border-b border-white/5 flex items-center justify-between px-6 z-40">
+                <div className="flex items-center gap-2">
+                    <Wallet className="text-primary" size={24} />
+                    <span className="font-bold text-lg">Hsabati</span>
+                </div>
+                <button onClick={toggleSidebar} className="p-2 text-muted-foreground hover:text-foreground">
+                    <Menu size={24} />
+                </button>
+            </div>
+
+            {/* Desktop Sidebar */}
+            <aside className="hidden lg:flex w-64 h-screen glass-morphism border-r border-white/5 flex-col fixed left-0 top-0 z-30">
+                <SidebarContent />
+            </aside>
+
+            {/* Mobile Overlay & Sidebar */}
+            <AnimatePresence>
+                {isOpen && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={toggleSidebar}
+                            className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+                        />
+                        <motion.aside
+                            initial={{ x: '-100%' }}
+                            animate={{ x: 0 }}
+                            exit={{ x: '-100%' }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                            className="lg:hidden fixed left-0 top-0 bottom-0 w-80 glass-morphism border-r border-white/10 z-50 overflow-y-auto"
+                        >
+                            <SidebarContent isMobile />
+                        </motion.aside>
+                    </>
+                )}
+            </AnimatePresence>
+        </>
     );
 };

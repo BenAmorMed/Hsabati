@@ -81,45 +81,45 @@ export const TransactionModal = ({ isOpen, onClose, onSuccess, token }: Transact
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.9, opacity: 0, y: 20 }}
                             onClick={(e) => e.stopPropagation()}
-                            className="glass-card w-full max-w-lg p-8 relative overflow-hidden"
+                            className="glass-card w-full max-w-lg p-6 md:p-8 relative overflow-hidden max-h-[90vh] overflow-y-auto"
                         >
                             <button
                                 onClick={onClose}
-                                className="absolute top-6 right-6 text-muted-foreground hover:text-foreground transition-colors"
+                                className="absolute top-4 right-4 md:top-6 md:right-6 text-muted-foreground hover:text-foreground transition-colors z-10"
                             >
-                                <X size={24} />
+                                <X size={20} className="md:w-6 md:h-6" />
                             </button>
 
-                            <h2 className="text-2xl font-bold mb-6">Record <span className="gradient-text">Transaction</span></h2>
+                            <h2 className="text-xl md:text-2xl font-bold mb-6">Record <span className="gradient-text">Transaction</span></h2>
 
-                            <form onSubmit={handleSubmit} className="space-y-6">
+                            <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
                                 <div className="flex p-1 bg-white/5 rounded-2xl">
                                     <button
                                         type="button"
                                         onClick={() => setType('expense')}
-                                        className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl transition-all ${type === 'expense' ? 'bg-red-500/20 text-red-400 font-bold border border-red-500/20' : 'text-muted-foreground hover:text-foreground'
+                                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 md:py-3 rounded-xl transition-all text-sm md:text-base ${type === 'expense' ? 'bg-red-500/20 text-red-400 font-bold border border-red-500/20' : 'text-muted-foreground hover:text-foreground'
                                             }`}
                                     >
-                                        <Minus size={18} /> Expense
+                                        <Minus size={16} className="md:w-[18px] md:h-[18px]" /> Expense
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => setType('income')}
-                                        className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl transition-all ${type === 'income' ? 'bg-green-500/20 text-green-400 font-bold border border-green-500/20' : 'text-muted-foreground hover:text-foreground'
+                                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 md:py-3 rounded-xl transition-all text-sm md:text-base ${type === 'income' ? 'bg-green-500/20 text-green-400 font-bold border border-green-500/20' : 'text-muted-foreground hover:text-foreground'
                                             }`}
                                     >
-                                        <Plus size={18} /> Income
+                                        <Plus size={16} className="md:w-[18px] md:h-[18px]" /> Income
                                     </button>
                                 </div>
 
                                 <div>
                                     <label className="block text-sm font-medium mb-2">Amount</label>
                                     <div className="relative">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-xl text-muted-foreground">$</span>
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-lg md:text-xl text-muted-foreground">$</span>
                                         <input
                                             type="number"
                                             step="0.01"
-                                            className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-4 text-2xl font-bold focus:outline-none focus:border-primary transition-colors"
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 md:py-4 text-xl md:text-2xl font-bold focus:outline-none focus:border-primary transition-colors"
                                             placeholder="0.00"
                                             value={amount}
                                             onChange={(e) => setAmount(e.target.value)}
@@ -128,13 +128,13 @@ export const TransactionModal = ({ isOpen, onClose, onSuccess, token }: Transact
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium mb-2 flex items-center gap-2">
                                             <Tag size={16} /> Category
                                         </label>
                                         <select
-                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition-colors appearance-none"
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 md:py-3 focus:outline-none focus:border-primary transition-colors appearance-none text-sm md:text-base"
                                             value={categoryId}
                                             onChange={(e) => setCategoryId(e.target.value)}
                                         >
@@ -150,7 +150,7 @@ export const TransactionModal = ({ isOpen, onClose, onSuccess, token }: Transact
                                         </label>
                                         <input
                                             type="date"
-                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition-colors [color-scheme:dark]"
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 md:py-3 focus:outline-none focus:border-primary transition-colors [color-scheme:dark] text-sm md:text-base"
                                             value={date}
                                             onChange={(e) => setDate(e.target.value)}
                                             required
@@ -164,8 +164,8 @@ export const TransactionModal = ({ isOpen, onClose, onSuccess, token }: Transact
                                     </label>
                                     <input
                                         type="text"
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition-colors"
-                                        placeholder="Whta was this for?"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 md:py-3 focus:outline-none focus:border-primary transition-colors text-sm md:text-base"
+                                        placeholder="What was this for?"
                                         value={description}
                                         onChange={(e) => setDescription(e.target.value)}
                                     />
@@ -175,10 +175,10 @@ export const TransactionModal = ({ isOpen, onClose, onSuccess, token }: Transact
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                     disabled={isLoading}
-                                    className="w-full bg-primary py-4 rounded-2xl font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all flex items-center justify-center"
+                                    className="w-full bg-primary py-3 md:py-4 rounded-2xl font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all flex items-center justify-center text-sm md:text-base"
                                 >
                                     {isLoading ? (
-                                        <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        <div className="w-5 h-5 md:w-6 md:h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                     ) : (
                                         'Record Transaction'
                                     )}
