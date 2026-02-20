@@ -15,6 +15,7 @@ export class UserService {
                 currency: true,
                 language: true,
                 theme: true,
+                hasSeenOnboarding: true,
                 createdAt: true,
             },
         });
@@ -33,6 +34,7 @@ export class UserService {
                 currency: true,
                 language: true,
                 theme: true,
+                hasSeenOnboarding: true,
             },
         });
         return { success: true, data: user };

@@ -21,26 +21,60 @@ export class TransactionsService {
         return { success: true, data: transaction };
     }
 
-    async findAll(userId: string) {
-        const transactions = await this.prisma.transaction.findMany({
-            where: { userId },
-            include: { category: true },
-            orderBy: { date: 'desc' },
-        });
-        return { success: true, data: transactions };
+    async findAll(userId: string, query: any = {}) {
+        const { type, categoryId, startDate, endDate, page = 1, limit = 20 } = query;
+        const skip = (Number(page) - 1) * Number(limit);
+        const take = Number(limit);
+
+        const where: any = { userId };
+        if (type) where.type = type;
+        if (categoryId) where.categoryId = categoryId;
+        if (startDate || endDate) {
+            where.date = {};
+            if (startDate) where.date.gte = new Date(startDate);
+            if (endDate) where.date.lte = new Date(endDate);
+        }
+
+        const [transactions, total] = await Promise.all([
+            this.prisma.transaction.findMany({
+                where,
+                include: { category: true },
+                orderBy: { date: 'desc' },
+                skip,
+                take,
+            }),
+            this.prisma.transaction.count({ where }),
+        ]);
+
+        return {
+            success: true,
+            data: transactions,
+            pagination: {
+                page: Number(page),
+                limit: take,
+                total,
+                pages: Math.ceil(total / take),
+            },
+        };
     }
 
     async findOne(userId: string, id: string) {
         const transaction = await this.prisma.transaction.findFirst({
             where: { id, userId },
+            include: { category: true },
         });
         if (!transaction) throw new NotFoundException('Transaction not found');
         return { success: true, data: transaction };
     }
 
     async update(userId: string, id: string, data: any) {
-        const transaction = await this.prisma.transaction.updateMany({
+        const existing = await this.prisma.transaction.findFirst({
             where: { id, userId },
+        });
+        if (!existing) throw new NotFoundException('Transaction not found');
+
+        const transaction = await this.prisma.transaction.update({
+            where: { id },
             data,
         });
 
@@ -49,8 +83,13 @@ export class TransactionsService {
     }
 
     async remove(userId: string, id: string) {
-        await this.prisma.transaction.deleteMany({
+        const existing = await this.prisma.transaction.findFirst({
             where: { id, userId },
+        });
+        if (!existing) throw new NotFoundException('Transaction not found');
+
+        await this.prisma.transaction.delete({
+            where: { id },
         });
 
         this.eventEmitter.emit('transaction.deleted', { userId });

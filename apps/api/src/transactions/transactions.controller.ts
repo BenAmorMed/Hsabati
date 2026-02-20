@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards, Request, Query } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
@@ -13,8 +13,8 @@ export class TransactionsController {
     }
 
     @Get()
-    findAll(@Request() req) {
-        return this.transactionsService.findAll(req.user.userId);
+    findAll(@Request() req, @Query() query: any) {
+        return this.transactionsService.findAll(req.user.userId, query);
     }
 
     @Get(':id')

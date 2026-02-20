@@ -16,16 +16,27 @@ export class NotificationsService {
     }
 
     async findAll(userId: string) {
-        return this.prisma.notification.findMany({
+        const notifications = await this.prisma.notification.findMany({
             where: { userId },
             orderBy: { createdAt: 'desc' },
+            take: 50,
         });
+        return { success: true, data: notifications };
     }
 
     async markAsRead(userId: string, id: string) {
-        return this.prisma.notification.updateMany({
+        const result = await this.prisma.notification.updateMany({
             where: { id, userId },
             data: { isRead: true },
         });
+        return { success: true, data: result };
+    }
+
+    async markAllAsRead(userId: string) {
+        await this.prisma.notification.updateMany({
+            where: { userId, isRead: false },
+            data: { isRead: true },
+        });
+        return { success: true, message: 'All notifications marked as read' };
     }
 }

@@ -14,6 +14,9 @@ import { ReminderModule } from './reminder/reminder.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { SyncModule } from './sync/sync.module';
 import { BackupModule } from './backup/backup.module';
+import { ExportModule } from './export/export.module';
+import { RecurringTransactionsModule } from './recurring-transactions/recurring-transactions.module';
+import { CurrencyModule } from './currency/currency.module';
 
 @Module({
   imports: [
@@ -30,6 +33,9 @@ import { BackupModule } from './backup/backup.module';
     NotificationsModule,
     SyncModule,
     BackupModule,
+    ExportModule,
+    RecurringTransactionsModule,
+    CurrencyModule,
   ],
   controllers: [AppController],
   providers: [AppService],

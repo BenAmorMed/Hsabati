@@ -1,5 +1,5 @@
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -25,6 +25,31 @@ model User {
   auditLogs        AuditLog[]
   syncStatus       SyncStatus?
   backups          Backup[]
+  recurringTransactions RecurringTransaction[]
+  hasSeenOnboarding   Boolean           @default(false)
+  isEmailVerified     Boolean           @default(false)
+  verificationToken   String?
+  twoFactorSecret     String?
+  isTwoFactorEnabled  Boolean           @default(false)
+  resetToken          String?
+  resetTokenExpires   DateTime?
+}
+
+model RecurringTransaction {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  type        String   // income | expense
+  amount      Float
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+  description String?
+  frequency   String   // daily | weekly | monthly | yearly
+  startDate   DateTime @default(now())
+  nextRunDate DateTime
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Wallet {
@@ -60,6 +85,7 @@ model Category {
   type         String // income | expense
   isCustom     Boolean       @default(false)
   transactions Transaction[]
+  recurringTransactions RecurringTransaction[]
   createdAt    DateTime      @default(now())
 }
 
@@ -133,4 +159,14 @@ model AnalyticsCache {
   updatedAt DateTime @default(now())
 
   @@unique([userId, type])
+}
+
+model CurrencyRate {
+  id        String   @id @default(uuid())
+  from      String
+  to        String
+  rate      Float
+  updatedAt DateTime @default(now())
+
+  @@unique([from, to])
 }

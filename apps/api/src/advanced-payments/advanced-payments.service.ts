@@ -76,4 +76,45 @@ export class AdvancedPaymentsService {
         });
         return { success: true, data: payments };
     }
+
+    async findOne(userId: string, id: string) {
+        const payment = await this.prisma.advancedPayment.findFirst({
+            where: { id, userId },
+            include: { logs: true },
+        });
+        if (!payment) throw new NotFoundException('Advanced payment not found');
+        return { success: true, data: payment };
+    }
+
+    async update(userId: string, id: string, data: any) {
+        // Ensure it exists and belongs to user
+        const existing = await this.prisma.advancedPayment.findFirst({
+            where: { id, userId },
+        });
+        if (!existing) throw new NotFoundException('Advanced payment not found');
+
+        const payment = await this.prisma.advancedPayment.update({
+            where: { id },
+            data: {
+                ...data,
+                // If amount is updated, we might need to recalculate remaining
+                // but for now, let's assume specific partial updates
+            },
+        });
+
+        return { success: true, data: payment };
+    }
+
+    async remove(userId: string, id: string) {
+        const existing = await this.prisma.advancedPayment.findFirst({
+            where: { id, userId },
+        });
+        if (!existing) throw new NotFoundException('Advanced payment not found');
+
+        await this.prisma.advancedPayment.delete({
+            where: { id },
+        });
+
+        return { success: true, message: 'Advanced payment removed' };
+    }
 }
