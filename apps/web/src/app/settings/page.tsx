@@ -46,6 +46,34 @@ export default function SettingsPage() {
         }
     };
 
+    const handleBackup = async () => {
+        setIsSaving(true);
+        try {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5555';
+            const res = await axios.get(`${apiUrl}/backup/export`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            // Create a blob and trigger download
+            const blob = new Blob([JSON.stringify(res.data, null, 2)], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `hsabati_backup_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            alert('Backup generated and downloaded successfully!');
+        } catch (err) {
+            console.error('Failed to generate backup', err);
+            alert('Failed to generate backup. Please try again.');
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
     if (isLoading || !token) return null;
 
     const SettingItem = ({ icon: Icon, label, value, color = 'primary' }: any) => (
@@ -197,9 +225,13 @@ export default function SettingsPage() {
                             <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
                                 <Cloud className="text-purple-400" /> Cloud Backup
                             </h3>
-                            <p className="text-sm text-muted-foreground mb-6">Last backup was performed yesterday at 11:45 PM.</p>
-                            <button className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl font-semibold transition-all">
-                                Backup Now
+                            <p className="text-sm text-muted-foreground mb-6">Last backup was performed recently. Export your data for offline safety.</p>
+                            <button
+                                onClick={handleBackup}
+                                disabled={isSaving}
+                                className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl font-semibold transition-all disabled:opacity-50"
+                            >
+                                {isSaving ? 'Processing...' : 'Backup Now'}
                             </button>
                         </section>
 
